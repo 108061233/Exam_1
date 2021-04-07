@@ -13,9 +13,9 @@ Thread dac;
 // make the button work once a time
 int one_pulse(int x, int last_in);
 // display the frequency on the LCD 
-void LCD(float freq);
+void LCD(float SR);
 // transfer the digital data to analog   
-void DAC_f(int *f);
+void DAC_f(float *SR);
 // transfer the analog data to digital                
 void ADC_f(void);                   
 
@@ -30,6 +30,8 @@ int main(void)
     float dis_SR = 0.125;
     float use_SR = 0.125;
     led = 0;
+
+    dac.start(callback(&DAC_f, &use_SR));
 
     while(1)
     {
@@ -84,8 +86,8 @@ int one_pulse(int x, int last_in)
 
 void LCD(float SR)
 {
-    uLCD.text_width(3);
-    uLCD.text_height(3);
+    uLCD.text_width(4);
+    uLCD.text_height(4);
     uLCD.locate(0,1);
     if (SR == 0.125)
         uLCD.printf("1/8");
@@ -95,4 +97,22 @@ void LCD(float SR)
         uLCD.printf("1/2");
     else
         uLCD.printf("1.0");
+}
+
+void DAC_f(float *SR)
+{
+    while(1)
+    {
+        for (int i = 0; i < 12000 / 4 ; i++)
+        {
+            if (i < ((1.0 / 3.0)  * (12000.0 / 4.0) * *SR))
+                // the fucnction of wave
+                Aout = ((3.0 / (1.0 / (3.0 * 4.166))) * (i / (12000.0 / 4.0))) / 3.3;
+            else if (i > ((12000 / 4) - (1.0 / 3.0)  * (12000.0 / 4.0) * *SR))
+                // the fucnction of wave
+                Aout = (3.0 - ((3.0 / (1.0 / (3.0 * 4.166))) * ((i - ((12000 / 4) - (1.0 / 3.0)  * (12000.0 / 4.0) * *SR) / (12000.0 / 4.0))))) / 3.3;
+            else
+                Aout = 3.0 / 3.3;            
+        }
+    }   
 }
