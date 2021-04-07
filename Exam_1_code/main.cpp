@@ -19,7 +19,7 @@ int one_pulse(int x, int last_in);
 // display the frequency on the LCD 
 void LCD(float SR);
 // transfer the digital data to analog
-void DAC(float *SR); 
+void indi(float *SR);
 void DAC_f(float *SR);
 // transfer the analog data to digital                
 void ADC_f(void);                   
@@ -72,7 +72,6 @@ int main(void)
         {
             // select the frequency
             use_SR = dis_SR;
-            // start the ADC
             ADC_f();
         } 
     }
@@ -106,24 +105,24 @@ void LCD(float SR)
 
 void DAC_f(float *SR)
 {
-    while(1)
+    while (1)
     {
         t.start();
-        for (int i = 0; i < 6000; i++)
+        for (int i = 0; i < 5200; i++)
         {
-            if (i < ((1.0 / 3.0)  * 6000.0 * *SR))
+            if (i < ((1.0 / 3.0)  * 5200.0 * *SR))
                 // the fucnction of wave
-                Aout = (3.0 * i / (6000.0 * *SR / 3.0)) / 3.3;
-            else if (i > (6000 - (1.0 / 3.0) * (6000.0 * *SR)))
+                Aout = (3.0 * i / (5200.0 * *SR / 3.0)) / 3.3;
+            else if (i > (5200 - (1.0 / 3.0) * (5200.0 * *SR)))
                 // the fucnction of wave
-                Aout = (3.0 - (3.0 * (i - (6000 - (1.0 / 3.0) * (6000.0 * *SR))) / (6000.0 * *SR / 3.0))) / 3.3;
+                Aout = (3.0 - (3.0 * (i - (5200 - (1.0 / 3.0) * (5200.0 * *SR))) / (5200.0 * *SR / 3.0))) / 3.3;
             else
                 Aout = 3.0 / 3.3;            
         }
         t.stop();
         auto ms = chrono::duration_cast<chrono::milliseconds>(t.elapsed_time()).count();
         printf ("Timer time: %llu ms\n", ms);
-    }   
+    }      
 }
 
 void ADC_f()
